@@ -1,4 +1,4 @@
-# Sage - Find Your Community
+# reddit this. - Find Your Community
 
 A modern web application that helps users discover meaningful conversations and get personalized advice from Reddit communities.
 
