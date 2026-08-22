@@ -29,10 +29,9 @@ export function ResultCard({
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       viewport={{ once: true }}
-      whileHover={{ y: -4 }}
     >
       <div className="space-y-4">
-        <h3 className="font-space font-semibold text-xl leading-tight line-clamp-2 group-hover:text-accent transition-colors duration-200">
+        <h3 className="font-space font-semibold text-xl leading-tight line-clamp-2">
           {title}
         </h3>
         

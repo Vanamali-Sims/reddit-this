@@ -4,34 +4,37 @@
 
 @layer base {
   :root {
-    /* Studio Design Tokens */
-    --bg: #0A0A0A;
-    --surface: #101010;
-    --text: #EDECE9;
-    --muted: #9B9B9B;
-    --accent: #FF4D2E;
-    --accent-amber: #FF9A5F;
-    
-    /* Shadcn tokens */
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    /* Studio Design Tokens — black, off-white, reddit red */
+    --bg: #0B0B0B;
+    --surface: #141414;
+    --raised: #1C1C1C;
+    --hover: #242424;
+    --line: #2A2A2A;
+    --text: #F2F1EE;
+    --muted-fg: #8A8A8A;
+    --accent: #FF4500;
+    --accent-dim: #CC3700;
+
+    /* Shadcn tokens aligned to the same palette */
+    --background: 0 0% 4%;
+    --foreground: 40 10% 95%;
+    --card: 0 0% 8%;
+    --card-foreground: 40 10% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 40 10% 95%;
+    --primary: 16 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 11%;
+    --secondary-foreground: 40 10% 95%;
+    --muted: 0 0% 11%;
+    --muted-foreground: 0 0% 54%;
+    --accent-shadcn: 0 0% 11%;
+    --accent-foreground: 40 10% 95%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 16 100% 50%;
     --radius: 0.5rem;
   }
 
@@ -41,14 +44,6 @@
 
   body {
     @apply bg-bg text-text font-instrument antialiased;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
-  }
-
-  /* Reduce grain on motion preference */
-  @media (prefers-reduced-motion: reduce) {
-    body {
-      background-image: none;
-    }
   }
 
   /* Typography scale */
@@ -78,95 +73,57 @@
 }
 
 @layer utilities {
-  /* Glass effect */
   .glass {
-    @apply backdrop-blur-md bg-white/5 border border-white/10;
+    @apply bg-surface border border-line;
   }
-  
-  /* Vignette */
+
   .vignette {
     position: relative;
   }
-  
-  .vignette::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, transparent 0%, rgba(10, 10, 10, 0.3) 100%);
-    pointer-events: none;
-  }
-  
-  /* Accent gradient text */
+
   .accent-gradient {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-amber) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--accent);
   }
-  
-  /* Section spacing */
+
   .section-padding {
     @apply pt-28 pb-24;
   }
-  
-  /* Grain overlay utility */
+
   .grain {
     position: relative;
   }
-  
-  .grain::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 1;
-  }
-  
-  /* Focus styles */
+
   .focus-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg;
   }
-  
-  /* Hover lift */
+
   .hover-lift {
-    @apply transition-transform duration-200 ease-out hover:-translate-y-0.5;
+    @apply hover:bg-hover;
   }
-  
-  /* Section reveal animation */
+
   .section-reveal {
-    @apply opacity-0 translate-y-6 transition-all duration-300 ease-out;
+    @apply opacity-100;
   }
-  
+
   .section-reveal.in-view {
-    @apply opacity-100 translate-y-0;
-  }
-  
-  /* Disable animations for reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .section-reveal,
-    .hover-lift,
-    * {
-      @apply transition-none;
-    }
+    @apply opacity-100;
   }
 }
 
-/* Custom components */
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-accent text-bg font-instrument font-medium rounded-lg hover:bg-accent-amber transition-colors duration-200 focus-ring;
+    @apply inline-flex items-center justify-center px-6 py-3 bg-accent text-white font-instrument font-medium rounded-lg hover:bg-accent-dim focus-ring;
   }
-  
+
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 border-2 border-accent text-accent font-instrument font-medium rounded-lg hover:bg-accent hover:text-bg disabled:hover:bg-transparent disabled:hover:text-accent transition-colors duration-200 focus-ring;
+    @apply inline-flex items-center justify-center px-6 py-3 bg-surface text-text font-instrument font-medium rounded-lg border border-line hover:bg-hover disabled:hover:bg-surface focus-ring;
   }
-  
+
   .card {
-    @apply bg-surface rounded-xl p-6 hover-lift;
+    @apply bg-surface rounded-xl p-6 border border-line hover:bg-hover;
   }
-  
+
   .card-minimal {
-    @apply bg-surface-50 rounded-lg p-4 border border-white/5;
+    @apply bg-raised rounded-lg p-4 border border-line hover:bg-hover;
   }
 }

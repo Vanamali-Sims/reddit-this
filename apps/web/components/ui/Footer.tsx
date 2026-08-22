@@ -9,7 +9,7 @@ export function Footer() {
 
   return (
     <motion.footer 
-      className="border-t border-white/5 py-16"
+      className="border-t border-line py-16"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
@@ -28,12 +28,12 @@ export function Footer() {
             <h5 className="font-instrument font-medium mb-4 text-text">Product</h5>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="#how-it-works" className="text-muted hover:text-text transition-colors">
+                <Link href="#how-it-works" className="text-muted hover:text-text">
                   How it works
                 </Link>
               </li>
               <li>
-                <Link href="#examples" className="text-muted hover:text-text transition-colors">
+                <Link href="#examples" className="text-muted hover:text-text">
                   Examples
                 </Link>
               </li>
@@ -47,17 +47,17 @@ export function Footer() {
             <h5 className="font-instrument font-medium mb-4 text-text">Company</h5>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/about" className="text-muted hover:text-text transition-colors">
+                <Link href="/about" className="text-muted hover:text-text">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-muted hover:text-text transition-colors">
+                <Link href="/privacy" className="text-muted hover:text-text">
                   Privacy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-muted hover:text-text transition-colors">
+                <Link href="/terms" className="text-muted hover:text-text">
                   Terms
                 </Link>
               </li>
@@ -71,7 +71,7 @@ export function Footer() {
                 href="https://github.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-8 h-8 bg-surface rounded-lg flex items-center justify-center text-muted hover:text-text hover:bg-accent hover:text-bg transition-all duration-200"
+                className="w-8 h-8 bg-surface border border-line rounded-lg flex items-center justify-center text-muted hover:text-text hover:bg-hover"
                 aria-label="GitHub"
               >
                 <Github size={16} />
@@ -80,7 +80,7 @@ export function Footer() {
                 href="https://twitter.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-8 h-8 bg-surface rounded-lg flex items-center justify-center text-muted hover:text-text hover:bg-accent hover:text-bg transition-all duration-200"
+                className="w-8 h-8 bg-surface border border-line rounded-lg flex items-center justify-center text-muted hover:text-text hover:bg-hover"
                 aria-label="Twitter"
               >
                 <Twitter size={16} />
@@ -89,7 +89,7 @@ export function Footer() {
           </div>
         </div>
         
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="pt-8 border-t border-line flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted text-sm">
             © {currentYear} reddit this. All rights reserved.
           </p>

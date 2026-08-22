@@ -49,13 +49,13 @@ export function HowItWorks() {
               viewport={{ once: true }}
             >
               <div className="relative mb-8">
-                <div className="w-16 h-16 mx-auto bg-surface rounded-xl flex items-center justify-center group-hover:bg-accent group-hover:text-bg transition-all duration-300">
+                <div className="w-16 h-16 mx-auto bg-surface border border-line rounded-xl flex items-center justify-center group-hover:bg-hover">
                   <step.icon size={28} strokeWidth={1.5} />
                 </div>
                 
                 {/* Connection line */}
                 {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-1/2 w-full h-px bg-gradient-to-r from-white/20 to-transparent" />
+                  <div className="hidden md:block absolute top-8 left-1/2 w-full h-px bg-line" />
                 )}
               </div>
               

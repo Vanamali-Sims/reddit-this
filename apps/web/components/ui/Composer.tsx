@@ -47,7 +47,7 @@ export function Composer({ onSearch, onGenerateDraft, isLoading = false }: Compo
   return (
     <motion.section 
       id="composer"
-      className="section-padding bg-bg border-t border-white/5"
+      className="section-padding bg-bg border-t border-line"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
@@ -61,7 +61,7 @@ export function Composer({ onSearch, onGenerateDraft, isLoading = false }: Compo
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Describe what's on your mind... Like: 'My scalp has been really itchy lately, especially after washing my hair. I've tried different shampoos but nothing seems to help. Has anyone else dealt with this?'"
-                className="w-full h-32 p-6 bg-surface rounded-xl border border-white/10 text-text placeholder:text-muted resize-none focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200"
+                className="w-full h-32 p-6 bg-surface rounded-xl border border-line text-text placeholder:text-muted resize-none focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent hover:bg-hover"
                 disabled={isLoading}
               />
               
@@ -77,12 +77,10 @@ export function Composer({ onSearch, onGenerateDraft, isLoading = false }: Compo
                     key={example}
                     type="button"
                     onClick={() => handleExampleClick(example)}
-                    className="card-minimal text-sm text-muted hover:text-text hover:bg-surface transition-colors duration-200 focus-ring"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    className="card-minimal text-sm text-muted hover:text-text focus-ring"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.1 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                   >
                     {example}
                   </motion.button>

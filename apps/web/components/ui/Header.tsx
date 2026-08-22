@@ -18,8 +18,8 @@ export function Header() {
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'glass backdrop-blur-md bg-surface/85' : 'bg-transparent'
+      className={`fixed top-0 left-0 right-0 z-50 ${
+        isScrolled ? 'bg-bg border-b border-line' : 'bg-transparent'
       }`}
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -29,7 +29,7 @@ export function Header() {
         <div className="flex items-center justify-between">
           <Link 
             href="/" 
-            className="font-space font-semibold text-xl text-text hover:text-accent transition-colors focus-ring rounded-md px-2 py-1"
+            className="font-space font-semibold text-xl text-text hover:text-accent focus-ring rounded-md px-2 py-1"
           >
             reddit this.
           </Link>
@@ -37,13 +37,13 @@ export function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link 
               href="#how-it-works" 
-              className="text-muted hover:text-text transition-colors focus-ring rounded-md px-2 py-1"
+              className="text-muted hover:text-text focus-ring rounded-md px-2 py-1"
             >
               How it works
             </Link>
             <Link 
               href="#examples" 
-              className="text-muted hover:text-text transition-colors focus-ring rounded-md px-2 py-1"
+              className="text-muted hover:text-text focus-ring rounded-md px-2 py-1"
             >
               Examples
             </Link>
@@ -51,7 +51,7 @@ export function Header() {
               href="https://github.com" 
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted hover:text-text transition-colors focus-ring rounded-md px-2 py-1"
+              className="text-muted hover:text-text focus-ring rounded-md px-2 py-1"
             >
               GitHub
             </Link>
@@ -65,7 +65,7 @@ export function Header() {
 
           {/* Mobile menu button */}
           <button 
-            className="md:hidden text-muted hover:text-text transition-colors focus-ring rounded-md p-2"
+            className="md:hidden text-muted hover:text-text focus-ring rounded-md p-2"
             aria-label="Open menu"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

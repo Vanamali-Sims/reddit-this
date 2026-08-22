@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Doodles } from './Doodles'
 
 export function Hero() {
   const scrollToComposer = () => {
@@ -19,9 +18,7 @@ export function Hero() {
   }
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center vignette overflow-hidden">
-      <Doodles variant="hero" />
-      
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="container mx-auto px-6 text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -30,7 +27,7 @@ export function Hero() {
         >
           <h1 className="mb-8 max-w-4xl mx-auto">
             Find your corner of{' '}
-            <span className="accent-gradient">Reddit</span>.
+            <span className="text-accent">Reddit</span>.
           </h1>
           
           <motion.p 
@@ -62,11 +59,6 @@ export function Hero() {
             </button>
           </motion.div>
         </motion.div>
-      </div>
-      
-      {/* Subtle glow behind headline */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-96 h-96 bg-accent-amber rounded-full opacity-[0.08] blur-3xl" />
       </div>
     </section>
   )

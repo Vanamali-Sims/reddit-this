@@ -10,7 +10,7 @@ export function CTA() {
   return (
     <>
       <motion.section 
-        className="section-padding border-t border-accent/20 bg-gradient-to-r from-surface to-surface/50"
+        className="section-padding border-t border-line bg-surface"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
@@ -42,7 +42,7 @@ export function CTA() {
       {/* Coming Soon Dialog */}
       {showDialog && (
         <motion.div
-          className="fixed inset-0 bg-bg/80 backdrop-blur-sm z-50 flex items-center justify-center p-6"
+          className="fixed inset-0 bg-bg/90 z-50 flex items-center justify-center p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
