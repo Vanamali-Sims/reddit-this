@@ -7,10 +7,6 @@ import logging
 from datetime import datetime, timezone
 from typing import List, Optional
 
-import asyncpraw
-from asyncpraw.models import Subreddit as PrawSubreddit
-from asyncpraw.models import Submission
-
 from core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -20,10 +16,12 @@ class RedditClient:
     """Async Reddit API client."""
 
     def __init__(self):
-        self._reddit: Optional[asyncpraw.Reddit] = None
+        self._reddit = None
 
-    async def _get_reddit(self) -> asyncpraw.Reddit:
+    async def _get_reddit(self):
         """Get or create Reddit instance."""
+        import asyncpraw
+
         if self._reddit is None:
             self._reddit = asyncpraw.Reddit(
                 client_id=settings.REDDIT_CLIENT_ID,
@@ -47,7 +45,7 @@ class RedditClient:
 
         try:
             reddit = await self._get_reddit()
-            subreddit: PrawSubreddit = await reddit.subreddit(subreddit_name)
+            subreddit = await reddit.subreddit(subreddit_name)
 
             # Fetch basic info
             await subreddit.load()
@@ -91,10 +89,9 @@ class RedditClient:
 
         try:
             reddit = await self._get_reddit()
-            subreddit: PrawSubreddit = await reddit.subreddit(subreddit_name)
+            subreddit = await reddit.subreddit(subreddit_name)
 
             posts = []
-            submission: Submission
             async for submission in subreddit.search(
                 query, limit=limit, time_filter=time_filter, sort=sort
             ):

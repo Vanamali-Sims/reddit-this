@@ -114,6 +114,8 @@ public
 .vscode-test
 
 # Python
+.venv/
+venv/
 *.pyc
 *.pyo
 *.pyd

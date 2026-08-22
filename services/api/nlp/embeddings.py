@@ -7,20 +7,20 @@ import logging
 from typing import List, Optional
 
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 from core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Global model instance
-_model: Optional[SentenceTransformer] = None
+_model = None
 
 
-def _load_model() -> SentenceTransformer:
-    """Load the embedding model."""
+def _load_model():
+    """Load the embedding model (real path only)."""
     global _model
     if _model is None:
+        from sentence_transformers import SentenceTransformer
+
         logger.info("Loading E5-small-v2 embedding model...")
         _model = SentenceTransformer("intfloat/e5-small-v2")
         logger.info("Embedding model loaded successfully")
@@ -29,7 +29,6 @@ def _load_model() -> SentenceTransformer:
 
 def _create_mock_embedding(text: str) -> np.ndarray:
     """Create a mock embedding for development."""
-    # Create a deterministic embedding based on text hash
     import hashlib
 
     hash_value = int(hashlib.md5(text.encode()).hexdigest(), 16)
@@ -55,11 +54,8 @@ async def embed_texts(texts: List[str]) -> np.ndarray:
         embeddings = np.array([_create_mock_embedding(text) for text in texts])
         return embeddings
 
-    # Run model inference in thread pool to avoid blocking
     loop = asyncio.get_event_loop()
-    embeddings = await loop.run_in_executor(
-        None, _generate_embeddings_sync, texts
-    )
+    embeddings = await loop.run_in_executor(None, _generate_embeddings_sync, texts)
     return embeddings
 
 
@@ -67,7 +63,6 @@ def _generate_embeddings_sync(texts: List[str]) -> np.ndarray:
     """Synchronous embedding generation."""
     model = _load_model()
 
-    # Preprocess texts for E5 model (add 'query:' prefix for search queries)
     processed_texts = [f"query: {text}" if len(texts) == 1 else text for text in texts]
 
     embeddings = model.encode(

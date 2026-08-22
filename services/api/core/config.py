@@ -2,30 +2,40 @@
 Application configuration management.
 """
 
-import os
+from pathlib import Path
 from typing import List
 
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_API_DIR = Path(__file__).resolve().parent.parent
+_REPO_ROOT = _API_DIR.parent.parent
 
 
 class Settings(BaseSettings):
     """Application settings."""
 
+    model_config = SettingsConfigDict(
+        env_file=(_REPO_ROOT / ".env", _API_DIR / ".env"),
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=True,
+    )
+
     # Environment
     ENVIRONMENT: str = Field(default="development")
     DEBUG: bool = Field(default=True)
 
-    # Database
-    DATABASE_URL: str = Field(...)
-    DATABASE_URL_SYNC: str = Field(...)
+    # Database (optional in mock mode)
+    DATABASE_URL: str = Field(default="")
+    DATABASE_URL_SYNC: str = Field(default="")
 
-    # Redis
-    REDIS_URL: str = Field(...)
+    # Redis (optional in mock mode)
+    REDIS_URL: str = Field(default="")
 
-    # Reddit API
-    REDDIT_CLIENT_ID: str = Field(...)
-    REDDIT_SECRET: str = Field(...)
+    # Reddit API (optional when USE_REDDIT_MOCK)
+    REDDIT_CLIENT_ID: str = Field(default="")
+    REDDIT_SECRET: str = Field(default="")
     REDDIT_USER_AGENT: str = Field(default="reddit-worry-finder:v0.1.0")
 
     # Optional LLM
@@ -35,9 +45,11 @@ class Settings(BaseSettings):
     APP_BASE_URL: str = Field(default="http://localhost:3000")
     API_BASE_URL: str = Field(default="http://localhost:8000")
 
-    # Development flags
+    # Development flags — local demo boots with no Postgres, Redis, or Reddit keys
     USE_REDDIT_MOCK: bool = Field(default=True)
-    USE_EMBEDDING_MOCK: bool = Field(default=False)
+    USE_EMBEDDING_MOCK: bool = Field(default=True)
+    USE_DB_MOCK: bool = Field(default=True)
+    USE_REDIS_MOCK: bool = Field(default=True)
 
     # Rate limiting
     RATE_LIMIT_REQUESTS_PER_MINUTE: int = Field(default=60)
@@ -52,10 +64,6 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: List[str] = Field(
         default=["http://localhost:3000", "http://127.0.0.1:3000"]
     )
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
 
 
 settings = Settings()

@@ -3,20 +3,28 @@ Redis client and rate limiting utilities.
 """
 
 import json
+import logging
 from typing import Any, Optional
-
-import redis.asyncio as redis
 
 from core.config import settings
 
-# Redis client
-redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+logger = logging.getLogger(__name__)
+
+redis_client = None
+
+if not settings.USE_REDIS_MOCK:
+    import redis.asyncio as redis
+
+    if not settings.REDIS_URL:
+        raise RuntimeError("REDIS_URL is required when USE_REDIS_MOCK=false")
+
+    redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
 
 
 class RateLimiter:
-    """Simple Redis-based rate limiter."""
+    """Rate limiter. Always allows traffic when Redis is mocked."""
 
-    def __init__(self, client: redis.Redis):
+    def __init__(self, client: Optional[Any]):
         self.client = client
 
     async def is_allowed(
@@ -25,17 +33,9 @@ class RateLimiter:
         limit: int,
         window_seconds: int = 60,
     ) -> bool:
-        """
-        Check if request is allowed under rate limit.
+        if self.client is None:
+            return True
 
-        Args:
-            key: Unique identifier (e.g., IP address, user ID)
-            limit: Maximum requests allowed in window
-            window_seconds: Time window in seconds
-
-        Returns:
-            True if request is allowed, False otherwise
-        """
         current_count = await self.client.incr(f"rate_limit:{key}")
         if current_count == 1:
             await self.client.expire(f"rate_limit:{key}", window_seconds)
@@ -43,18 +43,18 @@ class RateLimiter:
         return current_count <= limit
 
 
-# Global rate limiter instance
 rate_limiter = RateLimiter(redis_client)
 
 
 class Cache:
-    """Simple Redis-based cache."""
+    """Redis cache. No-ops when Redis is mocked."""
 
-    def __init__(self, client: redis.Redis):
+    def __init__(self, client: Optional[Any]):
         self.client = client
 
     async def get(self, key: str) -> Optional[Any]:
-        """Get value from cache."""
+        if self.client is None:
+            return None
         value = await self.client.get(f"cache:{key}")
         if value:
             return json.loads(value)
@@ -66,7 +66,8 @@ class Cache:
         value: Any,
         expire_seconds: int = 300,
     ) -> None:
-        """Set value in cache with expiration."""
+        if self.client is None:
+            return
         await self.client.setex(
             f"cache:{key}",
             expire_seconds,
@@ -74,9 +75,9 @@ class Cache:
         )
 
     async def delete(self, key: str) -> None:
-        """Delete value from cache."""
+        if self.client is None:
+            return
         await self.client.delete(f"cache:{key}")
 
 
-# Global cache instance
 cache = Cache(redis_client)

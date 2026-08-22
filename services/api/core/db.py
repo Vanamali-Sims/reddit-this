@@ -4,9 +4,7 @@ Database configuration and session management.
 
 from typing import AsyncGenerator
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.orm import DeclarativeBase
 
 from core.config import settings
 
@@ -17,35 +15,50 @@ class Base(DeclarativeBase):
     pass
 
 
-# Async engine for normal operations
-async_engine = create_async_engine(
-    settings.DATABASE_URL,
-    echo=settings.DEBUG,
-    pool_pre_ping=True,
-)
+async_engine = None
+sync_engine = None
+AsyncSessionLocal = None
+SessionLocal = None
 
-# Sync engine for Alembic migrations
-sync_engine = create_engine(
-    settings.DATABASE_URL_SYNC,
-    echo=settings.DEBUG,
-    pool_pre_ping=True,
-)
+if not settings.USE_DB_MOCK:
+    from sqlalchemy import create_engine
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+    from sqlalchemy.orm import sessionmaker
 
-# Session makers
-AsyncSessionLocal = async_sessionmaker(
-    async_engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-)
+    if not settings.DATABASE_URL or not settings.DATABASE_URL_SYNC:
+        raise RuntimeError(
+            "DATABASE_URL and DATABASE_URL_SYNC are required when USE_DB_MOCK=false"
+        )
 
-SessionLocal = sessionmaker(
-    sync_engine,
-    expire_on_commit=False,
-)
+    async_engine = create_async_engine(
+        settings.DATABASE_URL,
+        echo=settings.DEBUG,
+        pool_pre_ping=True,
+    )
+
+    sync_engine = create_engine(
+        settings.DATABASE_URL_SYNC,
+        echo=settings.DEBUG,
+        pool_pre_ping=True,
+    )
+
+    AsyncSessionLocal = async_sessionmaker(
+        async_engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+
+    SessionLocal = sessionmaker(
+        sync_engine,
+        expire_on_commit=False,
+    )
 
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_db() -> AsyncGenerator:
     """Dependency to get database session."""
+    if settings.USE_DB_MOCK or AsyncSessionLocal is None:
+        raise RuntimeError("Database is disabled (USE_DB_MOCK=true)")
+
     async with AsyncSessionLocal() as session:
         try:
             yield session
@@ -55,10 +68,11 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db() -> None:
     """Initialize database tables."""
-    # Import all models to ensure they are registered
+    if settings.USE_DB_MOCK or async_engine is None:
+        return
+
     from models import subreddit, post, alert, notification  # noqa: F401
 
-    # Create tables (in production, use Alembic migrations)
     if settings.DEBUG:
         async with async_engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)

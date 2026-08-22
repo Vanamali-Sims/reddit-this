@@ -18,11 +18,9 @@ from routes import health, search, draft, alerts
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan manager."""
-    # Startup
-    await init_db()
+    if not settings.USE_DB_MOCK:
+        await init_db()
     yield
-    # Shutdown
-    pass
 
 
 app = FastAPI(

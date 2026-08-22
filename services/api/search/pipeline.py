@@ -8,13 +8,8 @@ import time
 from typing import Dict, List, Optional
 
 import numpy as np
-from sqlalchemy import select, text
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
-from core.db import get_db
-from models.post import Post
-from models.subreddit import Subreddit
 from nlp.embeddings import embed_single_text, embed_texts
 from nlp.expand import QueryExpander
 from nlp.extract import TextExtractor
