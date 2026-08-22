@@ -32,11 +32,27 @@ type ApiPost = {
   permalink?: string
 }
 
+type DraftView = {
+  title: string
+  body: string
+  generated_by: string
+  reddit_submit_url?: string
+}
+
 function formatAge(createdUtc?: string) {
   if (!createdUtc) return ''
   const parsed = new Date(createdUtc)
   if (Number.isNaN(parsed.getTime())) return ''
   return formatDistanceToNow(parsed, { addSuffix: true })
+}
+
+function apiErrorMessage(body: unknown, fallback: string) {
+  const detail = (body as { detail?: unknown } | null)?.detail
+  if (typeof detail === 'string') return detail
+  if (Array.isArray(detail) && typeof detail[0]?.msg === 'string') {
+    return detail[0].msg
+  }
+  return fallback
 }
 
 function mapPost(post: ApiPost): ResultView {
@@ -61,6 +77,9 @@ export default function HomePage() {
   const [searchResults, setSearchResults] = useState<ResultView[] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
+  const [draft, setDraft] = useState<DraftView | null>(null)
+  const [isDrafting, setIsDrafting] = useState(false)
+  const [draftError, setDraftError] = useState<string | null>(null)
 
   const handleSearch = async (query: string) => {
     setIsLoading(true)
@@ -75,10 +94,7 @@ export default function HomePage() {
 
       if (!response.ok) {
         const body = await response.json().catch(() => null)
-        const detail = body?.detail
-        const message =
-          typeof detail === 'string' ? detail : `Search failed (${response.status})`
-        throw new Error(message)
+        throw new Error(apiErrorMessage(body, `Search failed (${response.status})`))
       }
 
       const data = await response.json()
@@ -96,7 +112,40 @@ export default function HomePage() {
   }
 
   const handleGenerateDraft = async (query: string) => {
-    console.log('Generate draft for:', query)
+    setIsDrafting(true)
+    setDraftError(null)
+
+    try {
+      const response = await fetch('/api/draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: query }),
+      })
+
+      if (!response.ok) {
+        const body = await response.json().catch(() => null)
+        throw new Error(apiErrorMessage(body, `Draft failed (${response.status})`))
+      }
+
+      setDraft(await response.json())
+    } catch (error) {
+      setDraft(null)
+      setDraftError(
+        error instanceof Error && error.message
+          ? error.message
+          : 'Could not reach the API. Start it with pnpm dev:api.'
+      )
+    } finally {
+      setIsDrafting(false)
+    }
+  }
+
+  const copyText = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (error) {
+      console.error('Failed to copy:', error)
+    }
   }
 
   const handleSaveResult = (id: string) => {
@@ -113,8 +162,59 @@ export default function HomePage() {
         <Composer 
           onSearch={handleSearch}
           onGenerateDraft={handleGenerateDraft}
-          isLoading={isLoading}
+          isLoading={isLoading || isDrafting}
         />
+
+        {(draftError || draft) && (
+          <section className="section-padding pt-0">
+            <div className="container mx-auto px-6">
+              <div className="max-w-4xl mx-auto card space-y-4">
+                {draftError && <p className="text-muted">{draftError}</p>}
+                {draft && (
+                  <>
+                    <div>
+                      <p className="text-sm text-muted mb-2">
+                        Draft ({draft.generated_by})
+                      </p>
+                      <h3 className="font-space font-semibold text-xl mb-4">
+                        {draft.title}
+                      </h3>
+                      <pre className="whitespace-pre-wrap text-muted font-sans leading-relaxed">
+                        {draft.body}
+                      </pre>
+                    </div>
+                    <div className="flex flex-wrap gap-3 pt-2">
+                      <button
+                        type="button"
+                        className="btn-secondary text-sm"
+                        onClick={() => copyText(draft.title)}
+                      >
+                        Copy title
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-secondary text-sm"
+                        onClick={() => copyText(draft.body)}
+                      >
+                        Copy body
+                      </button>
+                      {draft.reddit_submit_url && (
+                        <a
+                          href={draft.reddit_submit_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-primary text-sm"
+                        >
+                          Open Reddit submit
+                        </a>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
 
         {searchError && (
           <section className="section-padding pt-0">
