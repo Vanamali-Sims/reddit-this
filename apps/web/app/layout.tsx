@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   title: "reddit this. — Find your corner",
   description: "Type a worry. We surface the best threads—smart, not keyword-dumb.",
   keywords: ["reddit", "search", "community", "conversations", "discussions", "connect"],
-  themeColor: '#0A0A0A',
+  themeColor: '#0B0B0B',
   openGraph: {
     title: "reddit this. — Find your corner",
     description: "Type a worry. We surface the best threads—smart, not keyword-dumb.",

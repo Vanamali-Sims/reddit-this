@@ -4,19 +4,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-orange-400 to-pink-500 hover:from-orange-500 hover:to-pink-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105",
+        default: "bg-accent text-white hover:bg-accent-dim",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border-2 border-orange-200 bg-white/50 backdrop-blur-sm hover:bg-orange-50 hover:border-orange-300 text-gray-700",
+          "border border-line bg-surface text-text hover:bg-hover",
         secondary:
-          "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300",
-        ghost: "hover:bg-orange-50 hover:text-orange-700",
-        link: "text-orange-600 underline-offset-4 hover:underline",
+          "bg-surface text-text border border-line hover:bg-hover",
+        ghost: "hover:bg-hover text-muted hover:text-text",
+        link: "text-accent underline-offset-4 hover:underline",
       },
       size: {
         default: "h-12 px-6 py-3",

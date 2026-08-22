@@ -31,7 +31,7 @@ export function Header() {
             href="/" 
             className="font-space font-semibold text-xl text-text hover:text-accent focus-ring rounded-md px-2 py-1"
           >
-            reddit this.
+            reddit this<span className="text-accent">.</span>
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">

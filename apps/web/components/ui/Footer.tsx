@@ -18,7 +18,7 @@ export function Footer() {
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-4 gap-8 mb-12">
           <div>
-            <h4 className="font-space font-semibold text-lg mb-4 text-text">reddit this.</h4>
+            <h4 className="font-space font-semibold text-lg mb-4 text-text">reddit this<span className="text-accent">.</span></h4>
             <p className="text-muted text-sm leading-relaxed">
               Find meaningful conversations and get advice from Reddit communities that matter.
             </p>
