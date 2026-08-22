@@ -68,11 +68,20 @@ class TextExtractor:
         """
         try:
             keywords = self.yake_extractor.extract_keywords(text)
-            # Return only the phrases, sorted by score (lower is better)
-            return [phrase for score, phrase in keywords if score < 0.1]
+            phrases = []
+            for item in keywords:
+                if not isinstance(item, (tuple, list)) or len(item) != 2:
+                    continue
+                first, second = item
+                if isinstance(first, str):
+                    phrase, score = first, second
+                else:
+                    score, phrase = first, second
+                if isinstance(phrase, str) and phrase.strip():
+                    phrases.append(phrase.strip())
+            return phrases[:10] or self._simple_phrase_extraction(text)
         except Exception as e:
             logger.warning(f"YAKE extraction failed: {e}")
-            # Fallback to simple word extraction
             return self._simple_phrase_extraction(text)
 
     def _simple_phrase_extraction(self, text: str) -> List[str]:

@@ -104,7 +104,7 @@ class RedditClient:
             logger.warning(f"Failed to search {subreddit_name} for '{query}': {e}")
             return []
 
-    async def _submission_to_dict(self, submission: Submission) -> dict:
+    async def _submission_to_dict(self, submission) -> dict:
         """Convert Reddit submission to dictionary."""
         return {
             "id": submission.id,
