@@ -9,59 +9,97 @@ import { ResultCard } from '@/components/ui/ResultCard'
 import { CTA } from '@/components/ui/CTA'
 import { Footer } from '@/components/ui/Footer'
 import { motion } from 'framer-motion'
+import { formatDistanceToNow } from 'date-fns'
 
-// Mock data for demonstration
-const mockResults = [
-  {
-    id: '1',
-    title: 'Finally found what works for my itchy scalp after years of struggling',
-    snippet: 'I used to have the exact same problem! Turns out it was seborrheic dermatitis. What helped me was switching to a sulfate-free shampoo and using tea tree oil twice a week. Also, I found that stress was a huge trigger...',
-    subreddit: 'SkincareAddiction',
-    score: 847,
-    age: '2 days ago',
-    url: 'https://reddit.com/r/SkincareAddiction/comments/example'
-  },
-  {
-    id: '2',
-    title: 'PSA: Check your pillowcase! It solved my scalp issues completely',
-    snippet: 'This might sound weird but changing my pillowcase every 2 days completely eliminated my itchy scalp. I was using fabric softener that was irritating my skin. Cotton pillowcases and fragrance-free detergent made all the difference...',
-    subreddit: 'Hair',
-    score: 423,
-    age: '5 days ago',
-    url: 'https://reddit.com/r/Hair/comments/example'
-  },
-  {
-    id: '3',
-    title: 'Dermatologist here: Common causes of scalp irritation',
-    snippet: 'Board-certified dermatologist here. The most common causes I see are: 1) Over-washing (strips natural oils), 2) Product buildup, 3) Fungal infections, 4) Contact dermatitis from fragrances. Try a clarifying shampoo first...',
-    subreddit: 'Dermatology',
-    score: 1204,
-    age: '1 week ago',
-    url: 'https://reddit.com/r/Dermatology/comments/example'
+type ResultView = {
+  id: string
+  title: string
+  snippet: string
+  subreddit: string
+  score: number
+  age: string
+  url: string
+}
+
+type ApiPost = {
+  id: string
+  title: string
+  selftext?: string
+  subreddit: string
+  score?: number
+  created_utc?: string
+  url?: string
+  permalink?: string
+}
+
+function formatAge(createdUtc?: string) {
+  if (!createdUtc) return ''
+  const parsed = new Date(createdUtc)
+  if (Number.isNaN(parsed.getTime())) return ''
+  return formatDistanceToNow(parsed, { addSuffix: true })
+}
+
+function mapPost(post: ApiPost): ResultView {
+  const permalink = post.permalink
+    ? post.permalink.startsWith('http')
+      ? post.permalink
+      : `https://reddit.com${post.permalink}`
+    : undefined
+
+  return {
+    id: post.id,
+    title: post.title,
+    snippet: post.selftext?.trim() || 'No text in this post.',
+    subreddit: post.subreddit,
+    score: post.score ?? 0,
+    age: formatAge(post.created_utc),
+    url: post.url || permalink || '#',
   }
-]
+}
 
 export default function HomePage() {
-  const [searchResults, setSearchResults] = useState<typeof mockResults | null>(null)
+  const [searchResults, setSearchResults] = useState<ResultView[] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [searchError, setSearchError] = useState<string | null>(null)
 
   const handleSearch = async (query: string) => {
     setIsLoading(true)
-    
-    // Simulate API call
-    setTimeout(() => {
-      setSearchResults(mockResults)
+    setSearchError(null)
+
+    try {
+      const response = await fetch('/api/ingest/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: query, max_results: 12 }),
+      })
+
+      if (!response.ok) {
+        const body = await response.json().catch(() => null)
+        const detail = body?.detail
+        const message =
+          typeof detail === 'string' ? detail : `Search failed (${response.status})`
+        throw new Error(message)
+      }
+
+      const data = await response.json()
+      setSearchResults((data.posts || []).map(mapPost))
+    } catch (error) {
+      setSearchResults(null)
+      setSearchError(
+        error instanceof Error && error.message
+          ? error.message
+          : 'Could not reach the API. Start it with pnpm dev:api.'
+      )
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   const handleGenerateDraft = async (query: string) => {
-    // TODO: Implement draft generation
     console.log('Generate draft for:', query)
   }
 
   const handleSaveResult = (id: string) => {
-    // TODO: Implement save functionality
     console.log('Save result:', id)
   }
 
@@ -77,8 +115,17 @@ export default function HomePage() {
           onGenerateDraft={handleGenerateDraft}
           isLoading={isLoading}
         />
+
+        {searchError && (
+          <section className="section-padding pt-0">
+            <div className="container mx-auto px-6">
+              <div className="max-w-4xl mx-auto card text-muted">
+                {searchError}
+              </div>
+            </div>
+          </section>
+        )}
         
-        {/* Results Section */}
         {searchResults && (
           <motion.section 
             className="section-padding"
@@ -88,7 +135,11 @@ export default function HomePage() {
           >
             <div className="container mx-auto px-6">
               <div className="mb-12">
-                <h2 className="mb-4">Found {searchResults.length} relevant discussions</h2>
+                <h2 className="mb-4">
+                  {searchResults.length > 0
+                    ? `Found ${searchResults.length} relevant discussions`
+                    : 'No matching discussions yet'}
+                </h2>
                 <p className="text-muted">
                   Ranked by relevance, helpfulness, and community engagement.
                 </p>

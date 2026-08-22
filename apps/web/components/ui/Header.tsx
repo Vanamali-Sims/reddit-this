@@ -55,12 +55,12 @@ export function Header() {
             >
               GitHub
             </Link>
-            <Link 
-              href="/search" 
+            <a 
+              href="#composer" 
               className="btn-primary"
             >
               Open app
-            </Link>
+            </a>
           </nav>
 
           {/* Mobile menu button */}
