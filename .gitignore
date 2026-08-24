@@ -177,5 +177,12 @@ celerybeat.pid
 logs/
 *.log
 
+# MMSDM bulk archive (Phase 0 downloader)
+data/raw/*
+!data/raw/.gitkeep
+.tmp_listings/
+
 # Generated types
 packages/types/generated/
+buildPlan.Md
+docs/ARCHIVE.md
