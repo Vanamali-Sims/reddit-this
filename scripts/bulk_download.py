@@ -34,6 +34,12 @@ MONTHS = 12
 # P5MIN lives in P5MIN_ALL_DATA so we keep every forecast run, not the
 # DATA snapshot. MARKETNOTICE body table is not published publicly —
 # we still look for it and download MARKETNOTICETYPE.
+#
+# 2026-08-25 recon (July 2026 DATA listing):
+#   BIDDAYOFFER_D  = 2,316,017 bytes (~2.2 MB) — well under 500 MB/month, all 12 months
+#   DUDETAILSUMMARY = 378,300 bytes (~0.37 MB) — tiny, all 12 months
+# Do not confuse BIDDAYOFFER_D with BIDDAYOFFER (~278 MB) or BIDPEROFFER_D (~186 MB).
+# matches_table() is exact token match, so BIDDAYOFFER_D will not pull those.
 REPORTS: dict[str, tuple[str, str]] = {
     "DISPATCHPRICE": ("DISPATCHPRICE", "DATA"),
     "P5MIN": ("P5MIN_REGIONSOLUTION", "P5MIN_ALL_DATA"),
@@ -43,6 +49,8 @@ REPORTS: dict[str, tuple[str, str]] = {
     "DISPATCHCONSTRAINT": ("DISPATCHCONSTRAINT", "DATA"),
     "MARKETNOTICE": ("MARKETNOTICEDATA", "DATA"),
     "MARKETNOTICETYPE": ("MARKETNOTICETYPE", "DATA"),
+    "BIDDAYOFFER_D": ("BIDDAYOFFER_D", "DATA"),
+    "DUDETAILSUMMARY": ("DUDETAILSUMMARY", "DATA"),
 }
 
 ROOT = Path(__file__).resolve().parents[1]
